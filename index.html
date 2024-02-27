@@ -1,66 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Number App</title>
     <style>
-        .column {
-           float: left;
-           width: 50%;
-           padding: 10px;
-           box-sizing: border-box;
-          
-        }
-        .row::after {
-           content: "";
-           clear: both;
-           display: table;
-        }
-     </style>
-</head>
-<body>
+      .body {
+        display: flex;
+      
+        
+      }
+      .column,
+      .center,
+      .row {
+        padding: 10px;
+        box-sizing: border-box;
+      }
+      
+    </style>
+  </head>
+  <body>
     <div class="row">
-        <div class="column">          
-           <section>
-            <h2>Arithmetic</h2>
-            <input id="operand1"/> 
-            <label>+</label>
-            <input id="operand2"/>
-            <button onclick="add()">=</button>
-            <label id="sum"></label>  
+      <div class="column">
+        <section>
+          <h2>Arithmetic</h2>
+          <input id="operand1" />
+          <label>+</label>
+          <input id="operand2" />
+          <button onclick="add()">=</button>
+          <label id="sum"></label>
         </section>
-        </div>
-        <div class="column">
-            <section>
-                <h2>Prime check</h2>                
-                <label>Number to test:</label>
-                <input id="numberToTest"/>
-                <button onclick="isPrime()">Check</button>
-                <label id="primeCheckResult"></label>  
-            </section>           
-        </div>       
-     </div>
-    
-   
-    <script>
-        async function add() {
-            const operand1Input = document.getElementById("operand1");
-            const operand2Input = document.getElementById("operand2");
-            let n = operand1Input.value;
-            let m = operand2Input.value;
-            const response = await fetch("https://arithmetic-service.onrender.com/add/" + n + "/" + m);
-            const sum = await response.json();
-            document.getElementById("sum").innerText = sum;
-        }
+      </div>
+      <div class="center">
+        <section>
+          <h2>Prime check</h2>
+          <label>Number to test:</label>
+          <input id="numberToTest" />
+          <button onclick="isPrime()">Check</button>
+          <label id="primeCheckResult"></label>
+        </section>
+      </div>
+      <div class="column">
+        <section>
+          <h2>Caesar Cipher</h2>
+          <label for="inputText">Text:</label>
+          <input type="text" id="inputText" />
+          <button onclick="encodeText()">Cipher</button>
+          <table>
+            <tbody id="resultTableBody">
+              <!-- Result rows will be added dynamically here -->
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </div>
 
-        async function isPrime() {
-            const numberToTest = document.getElementById("numberToTest");            
-            let n = numberToTest.value;            
-            const response = await fetch("https://primes-service-mahalawise-latest.onrender.com" + n);
-            const result = await response.json();
-            document.getElementById("primeCheckResult").innerText = result;
-        }
+    <script>
+      async function add() {
+        const operand1Input = document.getElementById("operand1");
+        const operand2Input = document.getElementById("operand2");
+        let n = operand1Input.value;
+        let m = operand2Input.value;
+        const response = await fetch(
+          "https://arithmetic-service.onrender.com/add/" + n + "/" + m
+        );
+        const sum = await response.json();
+        document.getElementById("sum").innerText = sum;
+      }
+
+      async function isPrime() {
+        const numberToTest = document.getElementById("numberToTest");
+        let n = numberToTest.value;
+        const response = await fetch(
+          "https://primes-service-mahalawise-latest.onrender.com" + n
+        );
+        const result = await response.json();
+        document.getElementById("primeCheckResult").innerText = result;
+      }
+
+      function caesarCipher(text, shift) {
+        return text
+          .split("")
+          .map((char) => {
+            if (char.match(/[a-z]/i)) {
+              const code = char.charCodeAt(0);
+              const offset = code < 91 ? 65 : 97;
+              return String.fromCharCode(
+                ((code - offset + shift) % 26) + offset
+              );
+            }
+            return char;
+          })
+          .join("");
+      }
+
+      function encodeText() {
+        const inputText = document.getElementById("inputText").value;
+        const encodedText = caesarCipher(inputText, 3);
+
+        // Add the result to the table
+        const tableBody = document.getElementById("resultTableBody");
+        const newRow = tableBody.insertRow();
+        const originalCell = newRow.insertCell(0);
+        const encodedCell = newRow.insertCell(1);
+
+        originalCell.textContent = inputText;
+        encodedCell.textContent = encodedText;
+      }
     </script>
-</body>
+  </body>
 </html>
